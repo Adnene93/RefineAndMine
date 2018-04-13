@@ -122,6 +122,8 @@ The directory Q3XP contains the comparative study experiments reported in CSV fi
 ### 4.**AnimatedFigures**
 It contains a set of GIF figures, that we will keep updated reporting the behavior of our method in 2 dimensional datasets. We consider only 2 dimensional datasets in this figures as its easy to read the patterns. 
 
+![](figures/GLASS_2_1.gif)
+
 ### Version
 1.0.0
 
