@@ -98,6 +98,13 @@ An example of a test is given below:
 python <project_directory>/main.py  --Q2 --dataset HABERMAN  --nbattr 2 --wanted_label 2 --quality_measure informedness --sigma_qual 0 --sigma_sup 0.15 --sigma_sim 0.25 --top_k 10 --compute_crispiness
 ```
 
+The directory Q2XP contains the experiments reported in CSV files and PDF figures.
+
+#### 3.3. __Q3__: How effective is our method against ___`MCTS4DM`___.
+We tested ___`RefineAndMine`___ against a recent approach dubbed ___`MCTS4DM`___ that follows the same anytime paradigm relying on MCTS (Monte Carlo Tree Search) devised for pattern mining tasks. For scripts corresponding to MCTS, please refer to their companion page: https://github.com/guillaume-bosc/MCTS4DM .
+
+The directory Q3XP contains the comparative study experiments reported in CSV files and PDF figures.
+
 ### 4.**AnimatedFigures**
 It contains a set of GIF figures, that we will keep updated reporting the behavior of our method in 2 dimensional datasets. We consider only 2 dimensional datasets in this figures as its easy to read the patterns. 
 
@@ -105,7 +112,7 @@ It contains a set of GIF figures, that we will keep updated reporting the behavi
 1.0.0
 
 ### Corresponding Authors
-For additional informations please contact us: BELFODIL Adnene `adnene.belfodil@gmail.com`, BELFODIL Aimene `aimene.belfodil@gmail.com`
+For any questions/remarks, contact BELFODIL Adnene `adnene.belfodil@gmail.com`, BELFODIL Aimene `aimene.belfodil@gmail.com` or Mehdi Kaytoue: mehdi.kaytoue@insa-lyon.fr
 
 
 
