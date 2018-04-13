@@ -112,7 +112,7 @@ It contains a set of GIF figures, that we will keep updated reporting the behavi
 1.0.0
 
 ### Corresponding Authors
-For any questions/remarks, contact BELFODIL Adnene `adnene.belfodil@gmail.com`, BELFODIL Aimene `aimene.belfodil@gmail.com` or Mehdi Kaytoue: mehdi.kaytoue@insa-lyon.fr
+For any questions/remarks, contact Adnene Belfodil `adnene.belfodil@insa-lyon.fr`, Aimene Belfodil `aimene.belfodil@insa-lyon.fr` or Mehdi Kaytoue: mehdi.kaytoue@insa-lyon.fr .
 
 
 
