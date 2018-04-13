@@ -18,7 +18,12 @@ The figure illustrated above presents the behavior of ___`RefineAndMine`___  rep
  * __QualityBound__: the quality bound, as its name states reports the maximum quality that can be found starting from a timepoint. Hence the difference between the two curves (__Quality__ and __QualityBound__) depicts the accuaracy guarantee of ___`RefineAndMine`___ bounding the distance (error) to the optimal solution.
  * __Specificity__: Evaluates at what extent patterns uncovered in a step of ___`RefineAndMine`___  _(corresponding to a discretization resulting from the refinement of the previous discretization by the addition of a new cutpoint)_ approximates the patterns of the ground truth computed by an exhaustive search algorithm. 
  * __SpecificityBound__: Evaluates at what extent patterns uncovered in a step of ___`RefineAndMine`___ approximates the patterns of the whole search space, thereby reporting how diverse the patterns founds so far by the algorithm.  
- *  __Diversity__: The diversity in here corresponds to how the top-k diverse patterns set returned by ___`RefineAndMine`___ at a certain time approximates some ground truth ( top-k diverse patterns set computed after running an exhaustive search algorithm over the underlying dataset).
+ *  __Diversity__: The diversity in here corresponds to how the top-k diverse patterns set returned by ___`RefineAndMine`___ at a certain time approximates some ground truth ( top-k diverse patterns set computed after running an exhaustive search algorithm over the underlying dataset).  
+
+&nbsp;
+&nbsp;
+
+
 
 ## 1.**RefineAndMine** Project Scripts
 
@@ -26,6 +31,9 @@ Contains the scripts of  ___`RefineAndMine`___ and other scripts usefuls to prin
 
 > Before being able to use the project, please install Anaconda 4.3.1 for python 2.7 which can be found in the following url : **https://www.continuum.io/DOWNLOADS** and run the project using the conda python interpreter. 
 
+  
+  &nbsp;
+  &nbsp;
 ## 2.**Datasets**
 | Dataset         	| numerical attributes 	| #rows 	| #intervals                       	| class 	| prevalence 	|
 |-----------------	|:--------------------:	|:----:	|---------------------------------	|:-----:	|:----------:	|
@@ -53,8 +61,14 @@ Contains the scripts of  ___`RefineAndMine`___ and other scripts usefuls to prin
 | SONAR\_04\_R    	|           4          	|  208 	|          75 038 198 572 537 200 	|   R   	|    0.466   	|
 | SONAR\_05\_R    	|           5          	|  208 	|   1 390 307 743 151 960 000 000 	|   R   	|    0.466   	|
 
+&nbsp;
+&nbsp;
+  
 ## 3.**Experiments**
 The qualitative XP contains a set of experiments and example of scripts that can be used to reproduce performance experiments. Below the scripts corresponding to the questions that we aimed to answer in the paper:
+  
+  &nbsp;
+
 #### 3.1. __Q1__: How does the quality and its bounding measure evolve with time.
 The script below produce a csv file having as a name ```<DATASET>_<NB_ATTRS>_<WANTED_LABEL>.csv``` containing information about the quality of the best pattern and its bounding measure at differents timestamps. (The file is updated online with the execution of ___`RefineAndMine`___ leaving the oppurtinity to interrupt the method).
 ```
@@ -112,7 +126,7 @@ It contains a set of GIF figures, that we will keep updated reporting the behavi
 1.0.0
 
 ### Corresponding Authors
-For any questions/remarks, contact Adnene Belfodil `adnene.belfodil@insa-lyon.fr`, Aimene Belfodil `aimene.belfodil@insa-lyon.fr` or Mehdi Kaytoue: mehdi.kaytoue@insa-lyon.fr .
+For additional informations please contact us: BELFODIL Adnene `adnene.belfodil@gmail.com`, BELFODIL Aimene `aimene.belfodil@gmail.com`
 
 
 
