@@ -56,15 +56,15 @@ Contains the scripts of  ___`RefineAndMine`___ and other scripts usefuls to prin
 ## 3.**Experiments**
 The qualitative XP contains a set of experiments and example of scripts that can be used to reproduce performance experiments. Below the scripts corresponding to the questions that we aimed to answer in the paper:
 #### 3.1. __Q1__: How does the quality and its bounding measure evolve with time.
-The script below produce a csv file having as a name <DATASET>_<NB_ATTRS>_<WANTED_LABEL>.csv containing information about the quality of the best pattern and its bounding measure at differents timestamps. (The file is updated online with the execution of ___`RefineAndMine`___ leaving the oppurtinity to interrupt the method).
+The script below produce a csv file having as a name ```<DATASET>_<NB_ATTRS>_<WANTED_LABEL>.csv``` containing information about the quality of the best pattern and its bounding measure at differents timestamps. (The file is updated online with the execution of ___`RefineAndMine`___ leaving the oppurtinity to interrupt the method).
 ```
 python <project_directory>/main.py python --Q1 --dataset <DATASET>  --nbattr <NB_ATTRS> --wanted_label <WANTED_LABEL> --quality_measure <INTERESTINGNESS MEASURE>
 ```
 With :
-* ___<DATASET>___: the dataset name to use for experiments, example: CREDITA
-* ___<NB_ATTRS>___: the number of attributes to consider, example: 2
-* ___<WANTED_LABEL>___: the wanted label to discriminate, example: +
-* ___<INTERESTINGNESS MEASURE>___: The interestingness measure to consider,  available measures for now are: informedness, wracc, and linearCorr (Linear Correlation).
+* ```<DATASET>```: the dataset name to use for experiments, example: CREDITA
+* ```_<NB_ATTRS>```: the number of attributes to consider, example: 2
+* ```<WANTED_LABEL>```: the wanted label to discriminate, example: +
+* ```<INTERESTINGNESS MEASURE>```: The interestingness measure to consider,  available measures for now are: informedness, wracc, and linearCorr (Linear Correlation).
 
 An example of a test is given below:
 ```
