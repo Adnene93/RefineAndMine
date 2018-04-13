@@ -7,7 +7,7 @@ This repository contains the materials concerning the paper : Anytime Interval P
 3. **Experiments**: a collection of additional experiments depicting the effectiveness of ___`RefineAndMine`___ as well as the set of scripts used to generate the experiments.
 4. **AnimatedFigures**: a set of gif files illustrating the functioning of  ___`RefineAndMine`___ over some UCI datasets.
 
-We give below an illustration of an execution of ___`RefineAndMine`___ over some input UCI dataset depicting how the devised anytime algorithm explore the search space looking for a diversified patterns set. The first figure (left) presents some ground truth computed over the considered datset, the second figure (right) illustrates the returned patterns by ___`RefineAndMine`___ at differents stages of its execution while the third ones report some evaluation measures. Note that, the time is reported in ___seconds___. Below the figure we explain the core idea of ___`RefineAndMine`___, to read the figure keep in mind that: ___`RefineAndMine`___ starts by a discretization (a coarse one) and refines it by adding new cut-points in different dimensions as the time increases. Each gray dotted line corresponds to a new cutpoint added by the method, eventually the approach is able to perform a full traversal of the search space but still (as the example figure shows) the method always provide a solution following the anytime paradigm.   
+We give below an illustration of an execution of ___`RefineAndMine`___ over some input dataset depicting how the devised anytime algorithm explore the search space looking for a diversified patterns set. The first figure (left) presents some ground truth computed over the considered datset, the second figure (right) illustrates the returned patterns by ___`RefineAndMine`___ at differents stages of its execution while the third ones report some evaluation measures. Note that, the time is reported in ___seconds___. Below the figure we explain the core idea of ___`RefineAndMine`___, to read the figure keep in mind that: ___`RefineAndMine`___ starts by a discretization (a coarse one) and refines it by adding new cut-points in different dimensions as the time increases. Each gray dotted line corresponds to a new cutpoint added by the method, eventually the approach is able to perform a full traversal of the search space but still (as the example figure shows) the method always provide a solution following the anytime paradigm.   
 ![](figures/HABERMAN_2_1.gif)
 
 
@@ -20,13 +20,13 @@ The figure illustrated above presents the behavior of ___`RefineAndMine`___  rep
  * __SpecificityBound__: Evaluates at what extent patterns uncovered in a step of ___`RefineAndMine`___ approximates the patterns of the whole search space, thereby reporting how diverse the patterns founds so far by the algorithm.  
  *  __Diversity__: The diversity in here corresponds to how the top-k diverse patterns set returned by ___`RefineAndMine`___ at a certain time approximates some ground truth ( top-k diverse patterns set computed after running an exhaustive search algorithm over the underlying dataset).
 
-### 1.**RefineAndMine** Project Scripts
+## 1.**RefineAndMine** Project Scripts
 
 Contains the scripts of  ___`RefineAndMine`___ and other scripts usefuls to print figures, **./main.py** is the principal script file implementing the approach (Sorry, the code is for now a little bit messy, we will keep this page updated for a python library (model) which can be used to discover descriminant patterns with regards some user-defined quality measure (besides the traditional SD ones )).
 
 > Before being able to use the project, please install Anaconda 4.3.1 for python 2.7 which can be found in the following url : **https://www.continuum.io/DOWNLOADS** and run the project using the conda python interpreter. 
 
-### 2.**Datasets**
+## 2.**Datasets**
 | Dataset         	| numerical attributes 	| #rows 	| #intervals                       	| class 	| prevalence 	|
 |-----------------	|:--------------------:	|:----:	|---------------------------------	|:-----:	|:----------:	|
 | ABALONE\_02\_M  	|           2          	| 4177 	|                      54 401 655 	|   M   	|    0.366   	|
@@ -53,7 +53,27 @@ Contains the scripts of  ___`RefineAndMine`___ and other scripts usefuls to prin
 | SONAR\_04\_R    	|           4          	|  208 	|          75 038 198 572 537 200 	|   R   	|    0.466   	|
 | SONAR\_05\_R    	|           5          	|  208 	|   1 390 307 743 151 960 000 000 	|   R   	|    0.466   	|
 
-### 3.**Experiments**
+## 3.**Experiments**
+The qualitative XP contains a set of experiments and example of scripts that can be used to reproduce performance experiments. Below the scripts corresponding to the questions that we aimed to answer in the paper:
+#### 3.1. __Q1__: How does the quality and its bounding measure evolve with time.
+The script below produce a csv file having as a name <DATASET>_<NB_ATTRS>_<WANTED_LABEL>.csv containing information about the quality of the best pattern and its bounding measure at differents timestamps. (The file is updated online with the execution of ___`RefineAndMine`___ leaving the oppurtinity to interrupt the method).
+```
+python <project_directory>/main.py python --Q1 --dataset <DATASET>  --nbattr <NB_ATTRS> --wanted_label <WANTED_LABEL> --quality_measure <INTERESTINGNESS MEASURE>
+```
+With :
+* ___<DATASET>___: the dataset name to use for experiments, example: CREDITA
+* ___<NB_ATTRS>___: the number of attributes to consider, example: 2
+* ___<WANTED_LABEL>___: the wanted label to discriminate, example: +
+* ___<INTERESTINGNESS MEASURE>___: The interestingness measure to consider,  available measures for now are: informedness, wracc, and linearCorr (Linear Correlation).
+
+An example of a test is given below:
+```
+python <project_directory>/main.py  --Q1 --dataset HABERMAN  --nbattr 2 --wanted_label 2 --quality_measure informedness
+```
+
+The directory Q1XP contains the experiments reported in CSV files and PDF figures.
+
+
 
 
 ### 4.**AnimatedFigures**
