@@ -11,9 +11,20 @@ We give below an illustration of an execution of ___`RefineAndMine`___ over some
 ![](figures/HABERMAN_2_1.gif)
 
 
+>___`RefineAndMine`___ is an interruptible anytime pattern mining algorithm which strives to find in interesting regions in labeled numerical datasets that stand out with regards to the property of interest. The principle of functionning of ___`RefineAndMine`___ is intuitive, it starts by considering a coarse __discretization__ which is refined with the increase of the computation time. The devised approach ensure completeness at its termination, but still, it always provide a solution **(** numerical interval patterns that discriminate some studied class/label **)** which improves over time and eventuually converges to the optimal solution if enough time budget is given. An interesting feature is offered by ___`RefineAndMine`___ is its ability to provide provable guarantees that bound: (i) the distance from optimality (best pattern in the search space) (ii) the distance to completeness ensuring a high diversity.
 
-### 1.**RefineAndMine**
+The figure illustrated above presents the behavior of ___`RefineAndMine`___  reporting the evolution of __5__ measures:
+ * __Quality__: We report in here the best pattern's quality (informedness) over time. 
+ * __QualityBound__: the quality bound, as its name states reports the maximum quality that can be found starting from a timepoint. Hence the difference between the two curves (__Quality__ and __QualityBound__) depicts the accuaracy guarantee of ___`RefineAndMine`___ bounding the distance (error) to the optimal solution.
+ * __Specificity__: Evaluates at what extent patterns uncovered in a step of ___`RefineAndMine`___  _(corresponding to a discretization resulting from the refinement of the previous discretization by the addition of a new cutpoint)_ approximates the patterns of the ground truth computed by an exhaustive search algorithm. 
+ * __SpecificityBound__: Evaluates at what extent patterns uncovered in a step of ___`RefineAndMine`___ approximates the patterns of the whole search space, thereby reporting how diverse the patterns founds so far by the algorithm.  
+ *  __Diversity__: The diversity in here corresponds to how the top-k diverse patterns set returned by ___`RefineAndMine`___ at a certain time approximates some ground truth ( top-k diverse patterns set computed after running an exhaustive search algorithm over the underlying dataset).
 
+### 1.**RefineAndMine** Project Scripts
+
+Contains the scripts of  ___`RefineAndMine`___ and other scripts usefuls to print figures, **./main.py** is the principal script file implementing the approach (Sorry, the code is for now a little bit messy, we will keep this page updated for a python library (model) which can be used to discover descriminant patterns with regards some user-defined quality measure (besides the traditional SD ones )).
+
+> Before being able to use the project, please install Anaconda 4.3.1 for python 2.7 which can be found in the following url : **https://www.continuum.io/DOWNLOADS** and run the project using the conda python interpreter. 
 
 ### 2.**Datasets**
 | Dataset         	| numerical attributes 	| #rows 	| #intervals                       	| class 	| prevalence 	|
@@ -46,3 +57,11 @@ We give below an illustration of an execution of ___`RefineAndMine`___ over some
 
 
 ### 4.**AnimatedFigures**
+
+
+
+
+
+
+
+
