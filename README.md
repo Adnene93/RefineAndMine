@@ -1,4 +1,4 @@
-# RefineAndMine
+# Anytime Pattern Mining in Numerical Datasets with Guarantees (`RefineAndMine` Code and scripts)
 
 
 This repository contains the materials concerning the paper : Anytime Interval Patterns Mining with Guarantees. It contains:
