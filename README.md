@@ -73,10 +73,39 @@ python <project_directory>/main.py  --Q1 --dataset HABERMAN  --nbattr 2 --wanted
 
 The directory Q1XP contains the experiments reported in CSV files and PDF figures.
 
+#### 3.2. __Q2__: How does the diversity of ___`RefineAndMine`___ evolves with time.
+
+The script below produce a csv file having as a name ```<DATASET>_<NB_ATTRS>_<WANTED_LABEL>_<SIGMA_SUP>_<SIGMA_QUAL>_<TOPK>_<SIGMA_SIM>.csv``` which contains the informations about the diversity, specificity and its bound (if the option ```--compute_crispiness``` is activated) with time.
+
+```
+python <project_directory>/main.py  --Q2 --dataset <DATASET>  --nbattr <NB_ATTRS> --wanted_label <WANTED_LABEL> --quality_measure <INTERESTINGNESS MEASURE> --sigma_qual <SIGMA_QUAL> --sigma_sup <SIGMA_SUP> --sigma_sim <SIGMA_SIM> --top_k <TOPK> --compute_crispiness
+```
+
+With :
+* ```<DATASET>```: the dataset name to use for experiments, example: CREDITA
+* ```_<NB_ATTRS>```: the number of attributes to consider, example: 2
+* ```<WANTED_LABEL>```: the wanted label to discriminate, example: +
+* ```<INTERESTINGNESS MEASURE>```: The interestingness measure to consider,  example: informedness
+* ```<SIGMA_SUP>```: positive minimum support threshold, if given in between [0,1], it expresses the minimum TPR that a returned pattern should have, example:0.1.
+* ```<SIGMA_QUAL>```: minimum threshold of the quality value, example: 0.2.
+* ```<TOPK>```: Number of diverse patterns that should be returned by  ___`RefineAndMine`___, example: 10.
+* ```<SIGMA_SIM>```: maximum similarity that is allowed between patterns returned in the top-k list, if ```<SIGMA_SIM>```=0 then the patterns extents in the obtained in the list do not intersect. If ```<SIGMA_SIM>```=1 then the algorithm return the top-k patterns with regards the considered quality measures without filtering the resulting set.
+* ```compute_crispiness```: (The name is cool), if activated, the method compute the bound on the specificity, this was made as an option since the specificity bound is optional to the effectiveness of the algorithm, since it does not (for now) the exploration strategy of ___`RefineAndMine`___. However it induces an overhead on the computation, hence it is activated only for performance experiments. 
 
 
+An example of a test is given below:
+```
+python <project_directory>/main.py  --Q2 --dataset HABERMAN  --nbattr 2 --wanted_label 2 --quality_measure informedness --sigma_qual 0 --sigma_sup 0.15 --sigma_sim 0.25 --top_k 10 --compute_crispiness
+```
 
 ### 4.**AnimatedFigures**
+It contains a set of GIF figures, that we will keep updated reporting the behavior of our method in 2 dimensional datasets. We consider only 2 dimensional datasets in this figures as its easy to read the patterns. 
+
+### Version
+1.0.0
+
+### Corresponding Authors
+For additional informations please contact us: BELFODIL Adnene `adnene.belfodil@gmail.com`, BELFODIL Aimene `aimene.belfodil@gmail.com`
 
 
 
