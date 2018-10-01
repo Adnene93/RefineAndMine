@@ -1,0 +1,1 @@
+python ..//RefineAndMine//main.py --USE_ALGO --dataset_file ..//RefineAndMine//datasets//haberman.csv --attributes a b --label_attribute class --wanted_label 2 --delimiter , --sigma_sup 0.01 --sigma_qual 0.005 --sigma_sim 0.2 --top_k 20 --time_budget 5 --quality_measure informedness --results_file EXAMPLE_HABERMANN_CSV.csv;

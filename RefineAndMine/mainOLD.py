@@ -1094,16 +1094,6 @@ def enumerator_on_partitions_particular_init(dataset_to_partitions,partitions_to
 
 
 
-def compute_closed_on_the_positive_full_extent(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,extent,full_positive_extent): #TODOTODO
-	positive_extent=extent&full_positive_extent
-	if len(extent)==0:
-		return closed_numeric(dataset_to_partitions,partitions_to_dataset,attributes,positive_extent),positive_extent,encode_sup(positive_extent)
-
-	intervals=closed_numeric(dataset_to_partitions,partitions_to_dataset,attributes,positive_extent)
-	sup,__=compute_support_interval(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,intervals)
-	sup_bitset=encode_sup(sup)
-	return intervals,sup,sup_bitset
-
 def enumerator_on_partitions_particular_bitset_init(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr,indices_to_start_with=None,indices_to_start_with_full=None,threshold_sup=1,fixed_left=False,fixed_right=False,info_to_push={}):
 	if indices_to_start_with is None or len(indices_to_start_with)>=threshold_sup: 
 		refinement_index=0
@@ -1154,19 +1144,6 @@ def enumerator_on_partitions_particular_bitset_init(dataset_to_partitions,partit
 
 
 #####################################################################################################################################################################
-
-#TODO TODO
-def from_closed_bitset_to_support_corresponding_to_the_closed_on_the_positive_full_extent(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,intervals,support_indices_bitset,positive_extent):
-	#print intervals
-	pos_to_consider=support_indices_bitset&positive_extent
-	if pos_to_consider==closed_numeric_by_desc_bitset.ZERO:
-		return intbitset()
-	
-	intervals_closed,_=closed_numeric_by_desc_bitset(dataset_to_partitions,partitions_to_dataset_bitset,attributes,pos_to_consider,intervals,0)
-	#print intervals_closed
-	indices_to_start_with_full,__=compute_support_interval(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,intervals_closed)
-	indices_bitset_to_start_with_full=encode_sup(indices_to_start_with_full)
-	return indices_bitset_to_start_with_full
 
 def informedness(tpr,fpr,alpha):
 	return tpr-fpr
@@ -1219,8 +1196,6 @@ def core_stringent(p,sup,sup_bitset,partitions_to_dataset,partition_to_dataset_b
 				bitset_to_ret=bitset_to_ret-partition_to_dataset_bitset[attr_concerned][b]['=']
 				#bitset_to_ret&=~partition_to_dataset_bitset[attr_concerned][b]['=']
 		return core_p,set_to_ret,bitset_to_ret
-
-
 
 
 
@@ -1649,7 +1624,6 @@ def exhaustive_mine(dataset_to_partitions,partitions_to_dataset,partitions_to_da
 
 	#ALL_PATTERNS_FOUND={}
 	ALL_PATTERNS_FOUND=[];APPEND_RESULTS=ALL_PATTERNS_FOUND.append
-	HASHMAP_ALL_PATTERNS_FOUND={}
 	if ONLY_BITSET==True:
 		enum_function_to_use=enumerator_on_partitions_particular_bitset_init
 	else:
@@ -1687,8 +1661,6 @@ def exhaustive_mine(dataset_to_partitions,partitions_to_dataset,partitions_to_da
 					#APPEND_RESULTS((sup_full_bitset,quality_pattern))
 				else:
 					APPEND_RESULTS((pattern_value_to_print(p,partitions_to_dataset,attributes,reorganized_attributes),sup,sup_full_bitset,quality_pattern))
-					HASHMAP_ALL_PATTERNS_FOUND[sup_bitset]=(pattern_value_to_print(p,partitions_to_dataset,attributes,reorganized_attributes),sup,sup_full_bitset,quality_pattern)
-
 
 	print 'Time spent : ',time()-START
 		
@@ -1700,13 +1672,11 @@ def exhaustive_mine(dataset_to_partitions,partitions_to_dataset,partitions_to_da
 		print 'Guarantee : ',Guarantee
 		print 'Time spent : ',time()-START
 		print 'CRUNCHINESS : ',crunchiness/float(numero)
-		
+		print len(ALL_PATTERNS_FOUND)
 		print '------------Start------------------'
 		TIMESERIE_QUALITY.append((time()-START,best[2],numero))
 		TIMESERIE_GUARANTEE.append((time()-START,-1,numero))
-		#print len(ALL_PATTERNS_FOUND),'sdkjhazerluaopzdsmlkjdzupore'
 		yield TIMESERIE_QUALITY,TIMESERIE_GUARANTEE,ALL_PATTERNS_FOUND#ALL_PATTERNS_FOUND.values()
-		#yield TIMESERIE_QUALITY,TIMESERIE_GUARANTEE,HASHMAP_ALL_PATTERNS_FOUND.values()
 	else: 
 		#print 'CRUNCHINESS : ',1-float(crunchiness)/numero
 		#return 1-float(crunchiness)/numero
@@ -1731,25 +1701,21 @@ def get_top_k_div_from_a_pattern_set(patterns,threshold_sim=0.5,k=1): #patterns 
 	returned_patterns=[]
 	sorted_patterns=sorted(patterns,key=lambda x:x[3],reverse=True)
 	tp=sorted_patterns[0]
-	del sorted_patterns[0]
 	returned_patterns.append(tp)
-	to_remove=None
+	
 	while 1:
 		if len(returned_patterns)==k:
 			break
 
 		found_yet=False
 		
-		for indice,(p,sup,supbitset,qual) in enumerate(sorted_patterns):
+		for (p,sup,supbitset,qual) in sorted_patterns:
 			if all(jaccard(sup,supc)<=threshold_sim for _,supc,_,_ in returned_patterns):
 				found_yet=True
 				t_p=(p,sup,supbitset,qual)
 				returned_patterns.append(t_p)
-				to_remove=indice
 				break
-		if to_remove is not None:
-			del sorted_patterns[to_remove]
-
+		
 		if not found_yet:
 			break
 
@@ -1873,12 +1839,9 @@ def pattern_reorganize(p,attributes,reorganized_attributes):
 		new_p[ii]=p[indice_ii]
 	return new_p
 
-def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr,positive_extent,negative_extent,alpha_ratio_class,PROCEDURE_OF_SELECTION=select_next_cut_point_random,DISCRIMINATION_MEASURE=informedness,threshold_sup=1,threshold_qual=0.,keep_patterns_found=False,verbose=True,MAXIMUM_TIME=float('inf'),CRISPINESS_COMPUTATION=False,CLEAN_PATTERNS_FOUND_LIST=False,LIGHTER_PATTERN_SET=False,USE_ALGO=False):
+def discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr,positive_extent,negative_extent,alpha_ratio_class,PROCEDURE_OF_SELECTION=select_next_cut_point_random,DISCRIMINATION_MEASURE=informedness,threshold_sup=1,threshold_qual=0.,keep_patterns_found=False,verbose=True,MAXIMUM_TIME=float('inf'),CRISPINESS_COMPUTATION=False,CLEAN_PATTERNS_FOUND_LIST=False,LIGHTER_PATTERN_SET=False):
 	#TODO : When adding a cut point if positive is on all side or in all another side then there is no reason to mine patterns - need to check (left or right)
 	#TODO : When adding a cut point if negative is on all side or in all another there is no reason to check guarantees - need to check (left or right)
-	
-	CORE_CLOSE_ON_POSITIVE=True
-
 	len_full_dataset=len(dataset_to_partitions)
 	START=time()
 	CLOSE_ON_POSITIVE=True
@@ -1896,7 +1859,6 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 
 	HASHMAP_CRISPENESS={}; HASHMAP_CRISPENESS_POP=HASHMAP_CRISPENESS.pop; HASHMAP_CRISPENESS_GET=HASHMAP_CRISPENESS.get
 
-	HASHMAP_ALL_PATTERNS_FOUND={}
 	#ALL_PATTERNS_FOUND={};
 	ALL_PATTERNS_FOUND=[];APPEND_RESULTS=ALL_PATTERNS_FOUND.append
 	attributes_discretized=discretize_all_attributes(dataset,attributes,index_attr,3,positive_extent=positive_extent)
@@ -1935,19 +1897,6 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 			fpr=len(supNEG)/nb_negatives
 
 		core_p,sup_core_p,bitset_core_p=core_stringent(p,sup,sup_full_bitset,partitions_to_dataset_new,partitions_to_dataset_bitset_new,attributes,attributes_discretized)
-		if CORE_CLOSE_ON_POSITIVE:#FIX Error 
-			#print 'A',len(sup_core_p)
-			#core_p,sup_core_p,bitset_core_p=compute_closed_on_the_positive_full_extent(dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,attributes,sup_core_p,positive_extent)
-			#print p
-			bitset_core_p_plus=from_closed_bitset_to_support_corresponding_to_the_closed_on_the_positive_full_extent(dataset_to_partitions,partitions_to_dataset_new,partitions_to_dataset_bitset_new,attributes,p,bitset_core_p,positive_extent_bitset)
-			
-
-
-		else:
-			bitset_core_p_plus=bitset_core_p
-
-
-
 		fpr_core=0.
 		
 		if ONLY_BITSET:
@@ -1963,7 +1912,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 			HASHMAP_GUARANTEES[sup_bitset]=local_Guarantee#min(local_Guarantee,HASHMAP_GUARANTEES_get(sup_bitset,local_Guarantee))
 			if CRISPINESS_COMPUTATION:
 				before_writing=time()
-				HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p_plus)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
+				HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
 				START+=time()-before_writing
 			#HASHMAP_GUARANTEES_SUP[sup_bitset]=sup
 			FIRST_TIME=False
@@ -1982,8 +1931,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 					APPEND_RESULTS((compressed_sup_full_bitset,quality_pattern))
 				else:
 					APPEND_RESULTS((pattern_value_to_print(p,partitions_to_dataset_new,attributes,reorganized_attributes),sup,sup_full_bitset,quality_pattern))
-					if USE_ALGO:
-						HASHMAP_ALL_PATTERNS_FOUND[sup_bitset.strbits()]=(pattern_value_to_print(p,partitions_to_dataset_new,attributes,reorganized_attributes),sup,sup_full_bitset,quality_pattern)
+
 		
 		if local_Guarantee<best[2]: 
 			HASHMAP_GUARANTEES_POP(sup_bitset, None)
@@ -1992,7 +1940,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 			if CRISPINESS_COMPUTATION:
 				#HASHMAP_CRISPENESS_POP(sup_bitset, None)
 				before_writing=time()
-				HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p_plus)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
+				HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
 				START+=time()-before_writing
 		else: 
 			HASHMAP_GUARANTEES[sup_bitset]=local_Guarantee#min(local_Guarantee,HASHMAP_GUARANTEES_get(sup_bitset,local_Guarantee))
@@ -2000,7 +1948,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 			HASHMAP_GUARANTEES_INTERVAL[sup_bitset]=pattern_reorganize(p,attributes,reorganized_attributes)
 			if CRISPINESS_COMPUTATION:
 				before_writing=time()
-				HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p_plus)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
+				HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
 				START+=time()-before_writing
 
 	if verbose:
@@ -2062,17 +2010,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 				stdout.write('%s\r' % ('Percentage Done: ' + ('%.2f' % ((1-REMAINING_POINTS/ALL_REMAINING_POINTS)*100)).zfill(5) + '%   ' + 'Time : ' +  ('%.2f' % ((time()-START))) + '  ' + 'Best Quality : ' + str(best[2]) + '  ' + 'Guarantee : ' + str(GUARANTEE) + '  '+ 'Crispiness : '+ str('%.5f'%max(HASHMAP_CRISPENESS.values()))));stdout.flush();
 			START+=time()-before_writing	
 		before_yield=time()
-		if USE_ALGO:
-			accuracy_guarantee_to_ret=max(HASHMAP_GUARANTEES.values()) if len(HASHMAP_GUARANTEES) else Guarantee
-			if CRISPINESS_COMPUTATION:
-				crispiness_guarantee_to_ret=max(HASHMAP_CRISPENESS.values())
-			else:
-				crispiness_guarantee_to_ret=1.
-			#yield ALL_PATTERNS_FOUND,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,accuracy_guarantee_to_ret,crispiness_guarantee_to_ret
-			yield HASHMAP_ALL_PATTERNS_FOUND.values(),dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,accuracy_guarantee_to_ret,crispiness_guarantee_to_ret
-
-		else:
-			yield ALL_PATTERNS_FOUND,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new
+		yield ALL_PATTERNS_FOUND,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new
 		if CLEAN_PATTERNS_FOUND_LIST:
 			ALL_PATTERNS_FOUND=[]
 			APPEND_RESULTS=ALL_PATTERNS_FOUND.append
@@ -2116,19 +2054,6 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 						tpr=len(supPOS)/nb_positives
 
 					core_p,sup_core_p,bitset_core_p=core_stringent(p,sup,sup_full_bitset,partitions_to_dataset_new,partitions_to_dataset_bitset_new,reorganized_attributes,attributes_discretized)
-					if CORE_CLOSE_ON_POSITIVE:#FIX Error 
-						#core_p,sup_core_p,bitset_core_p=compute_closed_on_the_positive_full_extent(dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,reorganized_attributes,sup_core_p,positive_extent)
-						bitset_core_p_plus=from_closed_bitset_to_support_corresponding_to_the_closed_on_the_positive_full_extent(dataset_to_partitions,partitions_to_dataset_new,partitions_to_dataset_bitset_new,reorganized_attributes,p,bitset_core_p,positive_extent_bitset)
-						#print 'hey'
-						# print bitset_core_p_plus==bitset_core_p,bitset_core_p_plus<=bitset_core_p
-
-						# if bitset_core_p != bitset_core_p_plus:
-						# 	print bitset_core_p_plus,bitset_core_p,len(bitset_core_p_plus),len(bitset_core_p)
-
-					else:
-						bitset_core_p_plus=bitset_core_p
-
-
 					tpr_core=0.
 					fpr_core=0.
 					if ONLY_BITSET:
@@ -2155,7 +2080,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 						if CRISPINESS_COMPUTATION:
 							#HASHMAP_CRISPENESS_POP(sup_bitset, None)
 							before_writing=time()
-							HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p_plus)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
+							HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
 							if (can_enhance):
 								START+=time()-before_writing
 					else: 
@@ -2164,7 +2089,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 						HASHMAP_GUARANTEES_INTERVAL[sup_bitset]=pattern_reorganize(p,attributes,reorganized_attributes)
 						if CRISPINESS_COMPUTATION:
 							before_writing=time()
-							HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p_plus)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
+							HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
 							if (can_enhance):
 								START+=time()-before_writing
 							
@@ -2224,8 +2149,6 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 							APPEND_RESULTS((compressed_sup_full_bitset,quality_pattern))
 						else:
 							APPEND_RESULTS((pattern_value_to_print(p,partitions_to_dataset_new,attributes,reorganized_attributes),sup,sup_full_bitset,quality_pattern))
-							if USE_ALGO:
-								HASHMAP_ALL_PATTERNS_FOUND[sup_bitset.strbits()]=(pattern_value_to_print(p,partitions_to_dataset_new,attributes,reorganized_attributes),sup,sup_full_bitset,quality_pattern)
 
 				if can_enhance or CRISPINESS_COMPUTATION:
 					do_i_update=cnt_dict.get('continue_computation_guarantees',can_enhance)
@@ -2234,12 +2157,6 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 						if CRISPINESS_COMPUTATION and (not do_i_update):
 							before_writing_at_all=time()
 						core_p,sup_core_p,bitset_core_p=core_stringent(p,sup,sup_full_bitset,partitions_to_dataset_new,partitions_to_dataset_bitset_new,reorganized_attributes,attributes_discretized)
-						if CORE_CLOSE_ON_POSITIVE:#FIX Error 
-							#core_p,sup_core_p,bitset_core_p=compute_closed_on_the_positive_full_extent(dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,reorganized_attributes,sup_core_p,positive_extent)
-							bitset_core_p_plus=from_closed_bitset_to_support_corresponding_to_the_closed_on_the_positive_full_extent(dataset_to_partitions,partitions_to_dataset_new,partitions_to_dataset_bitset_new,reorganized_attributes,p,bitset_core_p,positive_extent_bitset)
-						else:
-							bitset_core_p_plus=bitset_core_p
-
 						tpr_core=0.
 						fpr_core=0.
 						if ONLY_BITSET:
@@ -2257,7 +2174,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 							if CRISPINESS_COMPUTATION:
 								#HASHMAP_CRISPENESS_POP(sup_bitset, None)
 								before_writing=time()
-								HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p_plus)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
+								HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
 								if (do_i_update):
 									START+=time()-before_writing
 								
@@ -2267,7 +2184,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 							HASHMAP_GUARANTEES_INTERVAL[sup_bitset]=pattern_reorganize(p,attributes,reorganized_attributes)
 							if CRISPINESS_COMPUTATION:
 								before_writing=time()
-								HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p_plus)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
+								HASHMAP_CRISPENESS[sup_bitset.strbits()]= float(len(sup_full_bitset - bitset_core_p)/(2.*float(len_full_dataset)))#,HASHMAP_CRISPENESS_GET(sup_bitset,1.))
 								if (do_i_update):
 									START+=time()-before_writing
 								
@@ -2308,17 +2225,8 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 		print 'CRISPINESS : ',max(HASHMAP_CRISPENESS.values())
 	print '------------FINAL------------------'
 
-	if USE_ALGO:
-		accuracy_guarantee_to_ret=max(HASHMAP_GUARANTEES.values()) if len(HASHMAP_GUARANTEES) else Guarantee
-		if CRISPINESS_COMPUTATION:
-			crispiness_guarantee_to_ret=max(HASHMAP_CRISPENESS.values())
-		else:
-			crispiness_guarantee_to_ret=1.
-		#yield ALL_PATTERNS_FOUND,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,accuracy_guarantee_to_ret,crispiness_guarantee_to_ret
-		yield HASHMAP_ALL_PATTERNS_FOUND.values(),dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,accuracy_guarantee_to_ret,crispiness_guarantee_to_ret
-		
-	else:
-		yield ALL_PATTERNS_FOUND,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new
+
+	yield ALL_PATTERNS_FOUND,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new
 
 	
 	
@@ -2547,91 +2455,6 @@ def stringifier(t):
 	s=s[:-1]
 	return s
 
-
-
-
-
-
-def Refine_and_mine_to_use(
-	file_path,
-	attributes,
-	attr_label,
-	wanted_label,
-	time_budget=7200,
-	selected_quality_measure='informedness',
-	threshold_quality=0.,
-	threshold_sup=1.,
-	threshold_sim=0.,
-	top_k=10,
-	specifity_guarantee_computation=False,
-	delimiter='\t'):
-	
-
-	dataset_file_to_consider=file_path
-	attributes=attributes
-	attr_label=attr_label
-	wanted_label=wanted_label
-	
-	MAXIMUM_TIME=time_budget
-	THRESHOLD_QUAL=threshold_quality
-	THRESHOLD_SUP=threshold_sup
-	THRESHOLD_SIM=threshold_sim
-	SELECTED_MEASURE=selected_quality_measure
-	TOP_K=top_k
-	CRISPINESS_COMPUTATION=specifity_guarantee_computation
-
-
-
-	##################################################################################################
-	SELECTED_MEASURE=MEASURES_DICTIONNARY[SELECTED_MEASURE]
-	index_initialization=time()
-	dataset,h=readCSVwithHeader(dataset_file_to_consider,numberHeader=attributes,delimiter=delimiter)
-	dataset,positive_extent,negative_extent,alpha_ratio_class,statistics=transform_dataset(dataset,attributes,attr_label,wanted_label,verbose=False)
-	index_attr,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset=compute_index_all_attributes(dataset,attributes,positive_extent=positive_extent,negative_extent=negative_extent)
-	index_initialization=time()-index_initialization
-	nb_pos=float(len(positive_extent))
-	
-	if THRESHOLD_SUP<1:
-		THRESHOLD_SUP=THRESHOLD_SUP*nb_pos
-
-	for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,acc_guarantee,acc_crispiness  in discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
-											positive_extent,negative_extent,alpha_ratio_class,
-											DISCRIMINATION_MEASURE=SELECTED_MEASURE,PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,verbose=False,MAXIMUM_TIME=MAXIMUM_TIME,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION,USE_ALGO=True):
-		continue
-	
-
-	#print 'REFINEANDMINE:',len(yielded_pattern_found)
-
-
-	topk_patterns_refine_and_mine=[(a,c,c,d) for (a,b,c,d) in yielded_pattern_found]
-	################################### >POST PROCESSING< ##################################
-	topk_patterns_refine_and_mine=get_top_k_div_from_a_pattern_set(topk_patterns_refine_and_mine,threshold_sim=THRESHOLD_SIM,k=TOP_K)
-	################################### >POST PROCESSING< ##################################
-	HEADER=['id_pattern','attributes','pattern','support_size','support_size_ratio',selected_quality_measure,'tpr','fpr','guarantee_accuracy','guarantee_specificity']
-
-
-	to_return=[]
-	for id_pattern,(p,p_sup,p_bitset,qual) in enumerate(topk_patterns_refine_and_mine):
-		#print attributes,p,len(set(p_bitset)),qual #p,p_sup,set(p_bitset)
-		to_return.append({
-			'id_pattern':id_pattern,
-			'attributes':attributes,
-			'pattern':p,
-			'support_size':len(set(p_bitset)),
-			'support_size_ratio':len(set(p_bitset))/float(len(dataset)),
-			selected_quality_measure : qual,
-			'tpr':len(set(p_bitset)&positive_extent)/float(len(positive_extent)),
-
-			'fpr':len(set(p_bitset)&negative_extent)/float(len(negative_extent)),
-			'guarantee_accuracy':acc_guarantee,
-			'guarantee_specificity':acc_crispiness,
-
-		})
-	return to_return,HEADER
-
-
-
-
 if __name__ == '__main__':
 	#########DEFAULT_VALUES#######################
 	DATASET_TO_USE='HABERMAN'#BALANCE
@@ -2669,16 +2492,7 @@ if __name__ == '__main__':
 
 	parser.add_argument('--dataset',metavar='dataset',type=str,help='dataset name')
 	parser.add_argument('--nbattr',metavar='nbattr',type=int,help='nb attributes')
-	
-	parser.add_argument('--dataset_file',metavar='dataset_file',type=str,help='dataset file path')
-	parser.add_argument('--delimiter',metavar='delimiter',type=str,help='delimiter of the csv file',default='\t')
-	parser.add_argument('--attributes',metavar='attributes',nargs='*',help='input the name of numerical attribute that you want to consider in the mining process')
-	parser.add_argument('--label_attribute',metavar='label_attribute',type=str,help='input the name the label class that you want to consider')
 	parser.add_argument('--wanted_label',metavar='wanted_label',type=str,help='considered label')
-	parser.add_argument('--time_budget',metavar='time_budget',type=float,help='timebudget in seconds')
-	parser.add_argument('--results_file',metavar='results_file',type=str,help='results file')
-
-
 	parser.add_argument('--sigma_sup',metavar='sigma_sup',type=float,help='support threshold')
 	parser.add_argument('--sigma_qual',metavar='sigma_qual',type=float,help='quality threshold')
 	parser.add_argument('--sigma_sim',metavar='sigma_sim',type=float,help='similarity threshold')
@@ -2692,260 +2506,9 @@ if __name__ == '__main__':
 	parser.add_argument('--exhaustive_info',action='store_true',help='First line of csv contains info about the exhaustive approach')
 
 
-
-	parser.add_argument('--USE_ALGO',action='store_true',help='use the algorithm naturally to provide patterns')
-
-
-
 	parser.add_argument('--save_exhaustive',action='store_true',help='save exhaustive top-k list in a file (ground truth)')
 
 	args=parser.parse_args()
-
-
-	if args.USE_ALGO:
-		KEEP_PATTERNS_FOUND=True
-		PLOTFIGURE=False
-
-		dataset_file_to_consider=args.dataset_file
-		attributes=args.attributes
-		attr_label=args.label_attribute
-		wanted_label=args.wanted_label if args.wanted_label is not None else WANTED_LABEL 
-		delimiter=args.delimiter
-		
-		MAXIMUM_TIME=args.time_budget if args.time_budget is not None else 7200
-
-
-		#raw_input('....')
-		THRESHOLD_QUAL=args.sigma_qual if args.sigma_qual is not None else 0.
-		THRESHOLD_SUP=args.sigma_sup if args.sigma_sup is not None else 1
-		THRESHOLD_SIM=args.sigma_sim if args.sigma_sim is not None else 0.
-		SELECTED_MEASURE=args.quality_measure if args.quality_measure is not None else 'informedness'
-		TOP_K=int(args.top_k) if args.top_k is not None else 10
-		CRISPINESS_COMPUTATION=args.compute_crispiness# if args.compute_crispiness is not None else CRISPINESS_COMPUTATION
-		WRITE_RESULTS_FILE=args.results_file if args.results_file is not None else 'resultNow.csv'
-		NB_ATTRIBUTES=args.nbattr if args.nbattr is not None else NB_ATTRIBUTES
-
-		print '------------------------------------------------------------------------'
-		print 'dataset:',dataset_file_to_consider
-		print 'attributes:',attributes,type(attributes)
-		print 'label_class:',attr_label
-		print 'wanted_label:',wanted_label
-		print 'delimiter:',delimiter
-
-		print 'threshold_quality:',THRESHOLD_QUAL
-		print 'threshold_support_pos:',THRESHOLD_SUP
-		print 'Threshold similarity:',THRESHOLD_SIM
-		print 'Selected Interestingness measure:',SELECTED_MEASURE
-
-		print 'TOP_K:',TOP_K
-		print 'Compute Specifity Guarantee:',CRISPINESS_COMPUTATION
-
-		print 'Time budget:',MAXIMUM_TIME
-
-		print 'Results file:',WRITE_RESULTS_FILE
-		print '------------------------------------------------------------------------'
-
-
-
-
-		# SELECTED_MEASURE=MEASURES_DICTIONNARY[SELECTED_MEASURE]
-		# index_initialization=time()
-		# dataset,h=readCSVwithHeader(dataset_file_to_consider,numberHeader=attributes,delimiter=delimiter)
-		
-		# dataset,positive_extent,negative_extent,alpha_ratio_class,statistics=transform_dataset(dataset,attributes,attr_label,wanted_label,verbose=False)
-		# index_attr,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset=compute_index_all_attributes(dataset,attributes,positive_extent=positive_extent,negative_extent=negative_extent)
-		# index_initialization=time()-index_initialization
-		# nb_pos=float(len(positive_extent))
-		
-		# if THRESHOLD_SUP<1:
-		# 	THRESHOLD_SUP=THRESHOLD_SUP*nb_pos
-
-
-		# # timeserie_qual,timeserie_guarantee,all_patterns_found_exhaustive= next(exhaustive_mine(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
-		# # 													positive_extent,negative_extent,alpha_ratio_class,DISCRIMINATION_MEASURE=SELECTED_MEASURE,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,MAXIMUM_TIME=MAXIMUM_TIME))
-		# # print 'EXHAUSTIVE:',len(all_patterns_found_exhaustive)
-
-		# for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,acc_guarantee,acc_crispiness  in discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
-		# 										positive_extent,negative_extent,alpha_ratio_class,
-		# 										DISCRIMINATION_MEASURE=SELECTED_MEASURE,PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,verbose=False,MAXIMUM_TIME=MAXIMUM_TIME,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION,USE_ALGO=True):
-		# 	#print acc_guarantee,acc_crispiness	
-		# 	continue
-		
-
-		# print 'REFINEANDMINE:',len(yielded_pattern_found)
-
-		# topk_patterns_refine_and_mine=[(a,c,c,d) for (a,b,c,d) in yielded_pattern_found]
-		# # if TOP_K>=len(topk_patterns_refine_and_mine):
-		# # 	return 
-		# topk_patterns_refine_and_mine=get_top_k_div_from_a_pattern_set(topk_patterns_refine_and_mine,threshold_sim=THRESHOLD_SIM,k=TOP_K)
-
-
-		Results,HEADER=Refine_and_mine_to_use(
-			dataset_file_to_consider,
-			attributes,
-			attr_label,
-			wanted_label,
-			time_budget=MAXIMUM_TIME,
-			selected_quality_measure=SELECTED_MEASURE,
-			threshold_quality=THRESHOLD_QUAL,
-			threshold_sup=THRESHOLD_SUP,
-			threshold_sim=THRESHOLD_SIM,
-			top_k=TOP_K,
-			specifity_guarantee_computation=CRISPINESS_COMPUTATION,
-			delimiter=delimiter)
-
-
-		# topk_patterns_exhaustive=[(a,c,c,d) for (a,b,c,d) in all_patterns_found_exhaustive]
-		# topk_patterns_exhaustive=get_top_k_div_from_a_pattern_set(topk_patterns_exhaustive,threshold_sim=THRESHOLD_SIM,k=TOP_K)
-
-		
-
-		#HEADER=['id_pattern','attributes','pattern','support_size','support_size_ratio','quality']
-
-
-
-		# to_write=[]
-		# for id_pattern,(p,p_sup,p_bitset,qual) in enumerate(topk_patterns_refine_and_mine):
-		# 	print attributes,p,len(set(p_bitset)),qual #p,p_sup,set(p_bitset)
-		# 	to_write.append({
-		# 		'id_pattern':id_pattern,
-		# 		'attributes':attributes,
-		# 		'pattern':p,
-		# 		'support_size':len(set(p_bitset)),
-		# 		'support_size_ratio':len(set(p_bitset))/float(len(dataset)),
-		# 		'quality':qual,
-		# 	})
-
-		writeCSVwithHeader(Results,WRITE_RESULTS_FILE,selectedHeader=HEADER,flagWriteHeader=True)
-		print 'Results Written in the following path ', WRITE_RESULTS_FILE
-
-		#raw_input('****************')
-
-
-
-
-
-
-		# DATASET_TO_USE=args.dataset if args.dataset is not None else DATASET_TO_USE
-	
-		
-		# COMPUTE_EXHAUSTIVE=COMPUTE_EXHAUSTIVE
-		# destinationCSVFile=DATASET_TO_USE+'_'+str(NB_ATTRIBUTES).zfill(2)+'_'+str(WANTED_LABEL)
-		
-		
-
-		
-		
-
-
-		# #if False:
-		
-		# print '--------------------------------------------Q1---------------------------------------------------'
-		# print 'Dataset : ',DATASET_TO_USE
-		# print 'NB Attributes : ',NB_ATTRIBUTES
-		# print 'Wanted Label : ',WANTED_LABEL
-		# print 'Selected Measure : ',SELECTED_MEASURE
-		# print 'Quality Threshold : ',THRESHOLD_QUAL
-		# print 'Support Threshold : ',THRESHOLD_SUP
-		# print '--------------------------------------------Q1---------------------------------------------------'
-
-		# if not os.path.exists('./tmp'):
-		# 	os.makedirs('./tmp')
-
-		# DATASET_ENTITY_CONSIDERED=DATASETDICTIONNARY[DATASET_TO_USE]
-		# data_file=path+'//'+DATASET_ENTITY_CONSIDERED['data_file']
-		# attributes=DATASET_ENTITY_CONSIDERED['attributes'][:NB_ATTRIBUTES]
-		# attr_label=DATASET_ENTITY_CONSIDERED['attr_label']
-		# wanted_label=DATASET_ENTITY_CONSIDERED['wanted_label'] if args.wanted_label is None else WANTED_LABEL
-		# SELECTED_MEASURE=MEASURES_DICTIONNARY[SELECTED_MEASURE]
-		
-		# index_initialization=time()
-		
-		# if True:
-		# 	transform_to_the_wanted_structure(data_file,selectedHeader=attributes+[attr_label],delimiter=',',nb_attributes=NB_ATTRIBUTES,class_label=attr_label,wanted_label=wanted_label)
-
-		# dataset,h=readCSVwithHeader(data_file,numberHeader=attributes,delimiter=',')
-		# dataset,positive_extent,negative_extent,alpha_ratio_class,statistics=transform_dataset(dataset,attributes,attr_label,wanted_label,verbose=False)
-		# index_attr,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset=compute_index_all_attributes(dataset,attributes,positive_extent=positive_extent,negative_extent=negative_extent)
-		# index_initialization=time()-index_initialization
-		# nb_pos=float(len(positive_extent))
-		
-
-
-
-		# # timeserie_qual,timeserie_guarantee,all_patterns_found_exhaustive= next(exhaustive_mine(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
-		# # 													positive_extent,negative_extent,alpha_ratio_class,DISCRIMINATION_MEASURE=SELECTED_MEASURE,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,MAXIMUM_TIME=MAXIMUM_TIME))
-		# # print 'EXHAUSTIVE:',len(all_patterns_found_exhaustive)
-
-		# for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,acc_guarantee,acc_crispiness  in discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
-		# 										positive_extent,negative_extent,alpha_ratio_class,
-		# 										DISCRIMINATION_MEASURE=SELECTED_MEASURE,PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,verbose=False,MAXIMUM_TIME=MAXIMUM_TIME,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION,USE_ALGO=True):
-		# 	#print acc_guarantee,acc_crispiness	
-		# 	continue
-		
-
-		# print 'REFINEANDMINE:',len(yielded_pattern_found)
-		# #print 'EXHAUSTIVE:',len(all_patterns_found_exhaustive)	
-		# #print TOP_K
-
-		
-		# # PAT_R_and_M=[c for (a,b,c,d) in yielded_pattern_found]
-		# # PAT_EXHAUSTIVE=[c for (a,b,c,d) in all_patterns_found_exhaustive]
-		# # print positive_extent
-		# # for p in PAT_EXHAUSTIVE:
-		# # 	if p not in PAT_R_and_M:
-		# # 		print set(p),set(p)&positive_extent
-		# # 		for 
-
-
-
-
-
-
-
-		# topk_patterns_refine_and_mine=[(a,c,c,d) for (a,b,c,d) in yielded_pattern_found]
-		# # if TOP_K>=len(topk_patterns_refine_and_mine):
-		# # 	return 
-		# topk_patterns_refine_and_mine=get_top_k_div_from_a_pattern_set(topk_patterns_refine_and_mine,threshold_sim=THRESHOLD_SIM,k=TOP_K)
-
-
-
-		# # topk_patterns_exhaustive=[(a,c,c,d) for (a,b,c,d) in all_patterns_found_exhaustive]
-		# # topk_patterns_exhaustive=get_top_k_div_from_a_pattern_set(topk_patterns_exhaustive,threshold_sim=THRESHOLD_SIM,k=TOP_K)
-
-		
-
-		# HEADER=['id_pattern','attributes','pattern','support_size','support_size_ratio','quality']
-
-
-		# to_write=[]
-		# for id_pattern,(p,p_sup,p_bitset,qual) in enumerate(topk_patterns_refine_and_mine):
-		# 	print attributes,p,len(set(p_bitset)),qual #p,p_sup,set(p_bitset)
-		# 	to_write.append({
-		# 		'id_pattern':id_pattern,
-		# 		'attributes':attributes,
-		# 		'pattern':p,
-		# 		'support_size':len(set(p_bitset)),
-		# 		'support_size_ratio':len(set(p_bitset))/float(len(dataset)),
-		# 		'quality':qual,
-
-
-		# 	})
-
-		# writeCSVwithHeader(to_write,WRITE_RESULTS_FILE,selectedHeader=HEADER,flagWriteHeader=True)
-		# # raw_input('.....')
-		# # print "EXHAUSTIVE NOW"
-		# # raw_input('.....')
-		# # for p,p_sup,p_bitset,qual in topk_patterns_exhaustive:
-		# # 	print attributes,p,len(set(p_bitset)),qual #p,p_sup,set(p_bitset)
-		
-
-
-
-
-
-
-
 
 
 	if args.STATS:
@@ -3014,7 +2577,7 @@ if __name__ == '__main__':
 		
 		index_initialization=time()
 		
-		if True:
+		if False:
 			transform_to_the_wanted_structure(data_file,selectedHeader=attributes+[attr_label],delimiter=',',nb_attributes=NB_ATTRIBUTES,class_label=attr_label,wanted_label=wanted_label)
 
 		dataset,h=readCSVwithHeader(data_file,numberHeader=attributes,delimiter=',')
@@ -3079,7 +2642,7 @@ if __name__ == '__main__':
 		TIMESERIE_QUALITY=[]
 		TIMESERIE_GUARANTEE=[]
 		TIMESERIE_GLOBALITY=[]
-		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
+		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
 												positive_extent,negative_extent,alpha_ratio_class,
 												DISCRIMINATION_MEASURE=SELECTED_MEASURE,PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,verbose=False,MAXIMUM_TIME=MAXIMUM_TIME,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION):
 			
@@ -3246,7 +2809,7 @@ if __name__ == '__main__':
 			exhaustive_dictionnary_symmetric_difference_min={k:1. for k in range(len(exhaustive_sets))}
 
 
-		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
+		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
 												positive_extent,negative_extent,alpha_ratio_class,
 												DISCRIMINATION_MEASURE=SELECTED_MEASURE,PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,verbose=False,MAXIMUM_TIME=MAXIMUM_TIME,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION,CLEAN_PATTERNS_FOUND_LIST=True):
 			yielded_pattern_found=[(a,c,c,d) for (a,b,c,d) in yielded_pattern_found]
@@ -3434,7 +2997,7 @@ if __name__ == '__main__':
 		FULL_NB_ITERATION=sum(len(y) for x,y in partitions_to_dataset.iteritems())
 
 
-		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
+		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
 												positive_extent,negative_extent,alpha_ratio_class,
 												DISCRIMINATION_MEASURE=SELECTED_MEASURE,PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=KEEP_PATTERNS_FOUND,verbose=False,MAXIMUM_TIME=MAXIMUM_TIME,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION,CLEAN_PATTERNS_FOUND_LIST=False,LIGHTER_PATTERN_SET=LIGHER_PATTERN_SET_FOR_DISCERETIZE):
 			
@@ -3637,7 +3200,7 @@ if __name__ == '__main__':
 		exhaustive_sets=[x[1] for x in all_supports_exhaustive_cleaned]
 		def discrete_process(compap=False):
 			
-			for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
+			for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
 												positive_extent,negative_extent,alpha_ratio_class,
 												PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,DISCRIMINATION_MEASURE=SELECTED_MEASURE,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=keep_patterns_found,LIGHTER_PATTERN_SET=LIGHTER_PATTERN_SET_DISCRETE,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION,verbose=False):
 				
@@ -3669,7 +3232,7 @@ if __name__ == '__main__':
 		time_refine_and_mine=timespent_by_exhaustive
 		
 
-		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
+		for yielded_pattern_found,dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new  in discretize_and_mine_STRINGENT_2(dataset_to_partitions,partitions_to_dataset,partitions_to_dataset_bitset,attributes,index_attr, \
 												positive_extent,negative_extent,alpha_ratio_class,
 												PROCEDURE_OF_SELECTION=select_next_cut_point_median_value_in_the_border,DISCRIMINATION_MEASURE=SELECTED_MEASURE,threshold_sup=THRESHOLD_SUP,threshold_qual=THRESHOLD_QUAL,keep_patterns_found=keep_patterns_found,LIGHTER_PATTERN_SET=LIGHTER_PATTERN_SET_DISCRETE,CRISPINESS_COMPUTATION=CRISPINESS_COMPUTATION,verbose=False):
 			continue

@@ -16,3 +16,4 @@ python ..//..//RefineAndMine//main.py  --plot GLASS_4_1.csv --x_axis_attribute t
 python ..//..//RefineAndMine//main.py  --plot HABERMAN_2_2.csv --x_axis_attribute timespent --methods globality recall crispiness --exhaustive_info
 python ..//..//RefineAndMine//main.py  --plot HABERMAN_3_2.csv --x_axis_attribute timespent --methods globality recall crispiness --exhaustive_info
 python ..//..//RefineAndMine//main.py  --plot SONAR_3_R.csv --x_axis_attribute timespent --methods globality recall crispiness --exhaustive_info
+Pause

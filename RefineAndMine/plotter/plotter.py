@@ -64,7 +64,7 @@ alphas_prevalence={
 }
 
 REARRANGE=False
-CONFIGURATION="Q1"
+CONFIGURATION="Q2"
 if CONFIGURATION=="Q1": #QUALITY AND GUARANTEE
 	FONTSIZE = 38
 	LEGENDFONTSIZE = 32
@@ -191,6 +191,11 @@ if CONFIGURATION=="LEGENDQ3": #QUALITY AND GUARANTEE
 	SHOWQualityFoundLINE=False
 	REARRANGE=True
 
+def find_to_insert(array,value):
+	for k in range(len(array)):
+		if array[k]>=value:
+			return k
+	return len(array)-1
 
 def plot_timeseries(timeseries,xlogscale=LOG_SCALE_X,ylogscale=False,destination_file=None,exhaustive_time=None,confirmation_time=None,best_pattern_found_time=None,show_plot=True): #timeseries={'timeserieName':(x_axis_values,y_axis_values) or y_axis_values }
 	
@@ -247,8 +252,12 @@ def plot_timeseries(timeseries,xlogscale=LOG_SCALE_X,ylogscale=False,destination
 	if exhaustive_time is not None:
 		if exhaustive_time<TIMELIMIT and SHOWEXHAUSTIVELINE:
 			ax.axvline(exhaustive_time, 0, 1.03,color="#e74c3c",linewidth=LINEWIDTH-1,linestyle="--",markersize=MARKERSIZE-1,alpha=0.85,label='ExhaustiveTime')#)
+			#print method
+			if method=='recall_RefineAndMine':
+				print destination_file,iterations[find_to_insert(vector,0.8)],exhaustive_time
 	if confirmation_time is not None:
 		if SHOWQualityFoundLINE:
+
 			ax.axvline(confirmation_time, 0, 1.03,color="#9b59b6",linewidth=LINEWIDTH-1,linestyle="--",markersize=MARKERSIZE-1,alpha=0.85,label='ConfirmationTime')#,)
 		else:
 			ax.axvline(confirmation_time, 0, 1.03,color="#9b59b6",linewidth=LINEWIDTH-1,linestyle="--",markersize=MARKERSIZE-1,alpha=0.85)

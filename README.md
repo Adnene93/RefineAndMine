@@ -5,8 +5,9 @@ This repository contains the materials concerning the paper : Anytime Interval P
 1. **RefineAndMine** : The project code.
 2. **Datasets**: the datasets used in experiments.
 3. **Experiments**: a collection of additional experiments depicting the effectiveness of ___`RefineAndMine`___ as well as the set of scripts used to generate the experiments.
-4. **AnimatedFigures**: a set of gif files illustrating the functioning of  ___`RefineAndMine`___ over some UCI datasets.
-5. **Technical Report**: the full paper with appendix containing proofs, additional details and additional experiments.
+4. **Using_Refine_And_Mine**: contains an example script of how to use refine and mine on a dataset
+5. **AnimatedFigures**: a set of gif files illustrating the functioning of  ___`RefineAndMine`___ over some UCI datasets.
+6. **Technical Report**: the full paper with appendix containing proofs, additional details and additional experiments.
 
 We give below an illustration of an execution of ___`RefineAndMine`___ over some input dataset depicting how the devised anytime algorithm explore the search space looking for a diversified patterns set. The first figure (left) presents some ground truth computed over the considered datset, the second figure (right) illustrates the returned patterns by ___`RefineAndMine`___ at differents stages of its execution while the third ones report some evaluation measures. Note that, the time is reported in ___seconds___. Below the figure we explain the core idea of ___`RefineAndMine`___, to read the figure keep in mind that: ___`RefineAndMine`___ starts by a discretization (a coarse one) and refines it by adding new cut-points in different dimensions as the time increases. Each gray dotted line corresponds to a new cutpoint added by the method, eventually the approach is able to perform a full traversal of the search space but still (as the example figure shows) the method always provide a solution following the anytime paradigm.   
 ![](figures/HABERMAN_2_1.gif)
@@ -36,31 +37,31 @@ Contains the scripts of  ___`RefineAndMine`___ and other scripts usefuls to prin
   &nbsp;
   &nbsp;
 ## 2.**Datasets**
-| Dataset         	| numerical attributes 	| #rows 	| #intervals                       	| class 	| prevalence 	|
-|-----------------	|:--------------------:	|:----:	|---------------------------------	|:-----:	|:----------:	|
-| ABALONE\_02\_M  	|           2          	| 4177 	|                      54 401 655 	|   M   	|    0.366   	|
-| ABALONE\_03\_M  	|           3          	| 4177 	|                  69 362 110 125 	|   M   	|    0.366   	|
-| ABALONE\_04\_M  	|           4          	| 4177 	|         204 535 406 509 260 000 	|   M   	|    0.366   	|
-| ABALONE\_05\_M  	|           5          	| 4177 	| 234 572 453 632 178 000 000 000 	|   M   	|    0.366   	|
-| AUTOS\_05\_0    	|           5          	|  199 	|              33 448 896 946 080 	|   0   	|    0.322   	|
-| AUTOS\_06\_0    	|           6          	|  199 	|         563 145 628 984 202 000 	|   0   	|    0.322   	|
-| BREAST\_07\_4   	|           7          	|  683 	|                 373 669 453 125 	|   4   	|    0.350   	|
-| BREAST\_08\_4   	|           8          	|  683 	|              16 815 125 390 625 	|   4   	|    0.350   	|
-| BREAST\_09\_4   	|           9          	|  683 	|             605 344 514 062 500 	|   4   	|    0.350   	|
-| CMC\_04\_1      	|           4          	| 1473 	|                       2 120 580 	|   1   	|    0.427   	|
-| CMC\_05\_1      	|           5          	| 1473 	|                       2 120 580 	|   1   	|    0.427   	|
-| CMC\_06\_1      	|           6          	| 1473 	|                       2 120 580 	|   1   	|    0.427   	|
-| CREDITA\_02\_+  	|           2          	|  666 	|                   1 339 778 520 	|   +   	|    0.449   	|
-| CREDITA\_03\_+  	|           3          	|  666 	|              11 408 214 097 800 	|   +   	|    0.449   	|
-| CREDITA\_04\_+  	|           4          	|  666 	|           2 886 278 166 743 400 	|   +   	|    0.449   	|
-| GLASS\_02\_1    	|           2          	|  214 	|                     157 703 283 	|   1   	|    0.327   	|
-| GLASS\_03\_1    	|           3          	|  214 	|                 689 321 049 993 	|   1   	|    0.327   	|
-| GLASS\_04\_1    	|           4          	|  214 	|           4 758 383 208 101 670 	|   1   	|    0.327   	|
-| HABERMAN\_02\_2 	|           2          	|  306 	|                          77 616 	|   2   	|    0.265   	|
-| HABERMAN\_03\_2 	|           3          	|  306 	|                      36 091 440 	|   2   	|    0.265   	|
-| SONAR\_03\_R    	|           3          	|  208 	|               4 606 396 474 680 	|   R   	|    0.466   	|
-| SONAR\_04\_R    	|           4          	|  208 	|          75 038 198 572 537 200 	|   R   	|    0.466   	|
-| SONAR\_05\_R    	|           5          	|  208 	|   1 390 307 743 151 960 000 000 	|   R   	|    0.466   	|
+| Dataset           | numerical attributes  | #rows   | #intervals                        | class   | prevalence  |
+|-----------------  |:--------------------: |:----: |---------------------------------  |:-----:  |:----------: |
+| ABALONE\_02\_M    |           2           | 4177  |                      54 401 655   |   M     |    0.366    |
+| ABALONE\_03\_M    |           3           | 4177  |                  69 362 110 125   |   M     |    0.366    |
+| ABALONE\_04\_M    |           4           | 4177  |         204 535 406 509 260 000   |   M     |    0.366    |
+| ABALONE\_05\_M    |           5           | 4177  | 234 572 453 632 178 000 000 000   |   M     |    0.366    |
+| AUTOS\_05\_0      |           5           |  199  |              33 448 896 946 080   |   0     |    0.322    |
+| AUTOS\_06\_0      |           6           |  199  |         563 145 628 984 202 000   |   0     |    0.322    |
+| BREAST\_07\_4     |           7           |  683  |                 373 669 453 125   |   4     |    0.350    |
+| BREAST\_08\_4     |           8           |  683  |              16 815 125 390 625   |   4     |    0.350    |
+| BREAST\_09\_4     |           9           |  683  |             605 344 514 062 500   |   4     |    0.350    |
+| CMC\_04\_1        |           4           | 1473  |                       2 120 580   |   1     |    0.427    |
+| CMC\_05\_1        |           5           | 1473  |                       2 120 580   |   1     |    0.427    |
+| CMC\_06\_1        |           6           | 1473  |                       2 120 580   |   1     |    0.427    |
+| CREDITA\_02\_+    |           2           |  666  |                   1 339 778 520   |   +     |    0.449    |
+| CREDITA\_03\_+    |           3           |  666  |              11 408 214 097 800   |   +     |    0.449    |
+| CREDITA\_04\_+    |           4           |  666  |           2 886 278 166 743 400   |   +     |    0.449    |
+| GLASS\_02\_1      |           2           |  214  |                     157 703 283   |   1     |    0.327    |
+| GLASS\_03\_1      |           3           |  214  |                 689 321 049 993   |   1     |    0.327    |
+| GLASS\_04\_1      |           4           |  214  |           4 758 383 208 101 670   |   1     |    0.327    |
+| HABERMAN\_02\_2   |           2           |  306  |                          77 616   |   2     |    0.265    |
+| HABERMAN\_03\_2   |           3           |  306  |                      36 091 440   |   2     |    0.265    |
+| SONAR\_03\_R      |           3           |  208  |               4 606 396 474 680   |   R     |    0.466    |
+| SONAR\_04\_R      |           4           |  208  |          75 038 198 572 537 200   |   R     |    0.466    |
+| SONAR\_05\_R      |           5           |  208  |   1 390 307 743 151 960 000 000   |   R     |    0.466    |
 
 &nbsp;
 &nbsp;
@@ -126,8 +127,39 @@ The directory Q3XP contains the comparative study experiments reported in CSV fi
   
   &nbsp;
   &nbsp;
-  
-### 4.**AnimatedFigures**
+
+
+
+### 4. **Using_Refine_And_Mine**
+
+
+
+```
+python <project_directory>/main.py  --USE_ALGO --dataset_file <DATASET_FILEPATH>  -attributes <ATTRIBUTES> --label_attribute <LABEL_ATTRIBUTE> --wanted_label <WANTED_LABEL> --delimiter <DELIMITER> --sigma_sup <SIGMA_SUP> --sigma_qual <SIGMA_QUAL> --sigma_sim <SIGMA_SIM> --top_k <TOPK> --time_budget <TIMEBUDGET> --quality_measure <INTERESTINGNESS MEASURE> --results_file <RESULTS_FILEPATH> --compute_crispiness
+```
+
+With :
+* ```<DATASET_FILEPATH>```: the dataset file path, example: <project_directory>//datasets//haberman.csv
+* ```_<ATTRIBUTES>```: the numerical attributes to consider, example: a b
+* ```_<LABEL_ATTRIBUTE>```: the attribute name containing the studied class, example: class
+* ```<WANTED_LABEL>```: the wanted label to discriminate, example: +
+* ```<INTERESTINGNESS MEASURE>```: The interestingness measure to consider,  example: informedness, wracc, linearCorr
+* ```<SIGMA_SUP>```: positive minimum support threshold, if given in between [0,1], it expresses the minimum TPR that a returned pattern should have, example:0.1.
+* ```<SIGMA_QUAL>```: minimum threshold of the quality value, example: 0.2.
+* ```<TOPK>```: Number of diverse patterns that should be returned by  ___`RefineAndMine`___, example: 10.
+* ```<SIGMA_SIM>```: maximum similarity that is allowed between patterns returned in the top-k list, if ```<SIGMA_SIM>```=0 then the patterns extents in the obtained in the list do not intersect. If ```<SIGMA_SIM>```=1 then the algorithm return the top-k patterns with regards the considered quality measures without filtering the resulting set.
+* ```compute_crispiness```: (The name is cool), if activated, the method compute the bound on the specificity, this was made as an option since the specificity bound is optional to the effectiveness of the algorithm, since it does not (for now) the exploration strategy of ___`RefineAndMine`___. However it induces an overhead on the computation, hence it is activated only for performance experiments. 
+* ```<TIMEBUDGET>``` : the timebudget in seconds given to the algorithm., example: 10 ( ___`RefineAndMine`___ is given in here 10 seconds to mine for discriminative interval patterns after which the algorithm is interrupted and the found results are returned)
+* ```<RESULTS_FILEPATH>```: the file path containing the results set (the found patterns by  ___`RefineAndMine`___), example: './results_haberman.csv'
+
+
+An example of using Refine and Mine is given below:
+```
+python <project_directory>//main.py --USE_ALGO --dataset_file <project_directory>//datasets//haberman.csv --attributes a b --label_attribute class --wanted_label 2 --delimiter , --sigma_sup 0.01 --sigma_qual 0.005 --sigma_sim 0.2 --top_k 20 --time_budget 5 --quality_measure informedness --results_file EXAMPLE_HABERMANN_CSV.csv 
+```
+
+
+### 5.**AnimatedFigures**
 It contains a set of GIF figures, that we will keep updated reporting the behavior of our method in 2 dimensional datasets. We consider only 2 dimensional datasets in this figures as its easy to read the patterns. 
   
   ![](figures/GLASS_2_1.gif)

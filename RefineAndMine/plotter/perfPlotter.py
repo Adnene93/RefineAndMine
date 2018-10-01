@@ -12,7 +12,7 @@ from math import log
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
 
-CONFIGURATION="Q4"
+CONFIGURATION="Q1"
 Y_SCALE_BARS="nb_candidates_subgroups"
 
 if CONFIGURATION=="Q1": #HMT TO ITEMSET
