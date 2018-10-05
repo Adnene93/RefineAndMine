@@ -108,6 +108,7 @@ def compute_index_per_attribute(dataset,attr_name,positive_extent=None,negative_
 			index_values_indices[value]=set()
 		index_values_indices[value]|={i}
 	i=0
+
 	for v in sorted(index_values_indices):
 		s=index_values_indices[v]
 		l_values_distinct_append(v)
@@ -126,23 +127,32 @@ def compute_index_per_attribute(dataset,attr_name,positive_extent=None,negative_
 		#print ' '
 		#print all_indices
 		l_values_distinct_to_consider_pos=sorted({dataset[i][attr_name] for i in positive_extent})
+
 		l_values_distinct_to_consider_neg=sorted({dataset[i][attr_name] for i in negative_extent})
 		l_indices_to_consider=[values_to_indices[x] for x in l_values_distinct_to_consider_pos]
 		l_indices_to_consider_pos=[values_to_indices[x] for x in l_values_distinct_to_consider_pos]
 		l_indices_to_consider_neg=[values_to_indices[x] for x in l_values_distinct_to_consider_neg]
 
+		#print l_values_distinct
+		#print [l_values_distinct[x] for x in l_indices_to_consider_pos]
 		#print l_indices_to_consider
+		#print [l_values_distinct[x] for x in l_indices_to_consider]
 		#print l_indices_to_consider_neg
 
 		l_indices_to_consider_set=set(l_indices_to_consider)
 		l_indices_to_consider_neg_set=set(l_indices_to_consider_neg)
 		pure_positives=[]
 		iter_l_indices_to_consider = iter(range(len(l_indices_to_consider)))
-		pure_positives.append([next(iter_l_indices_to_consider)])
+		pure_positives.append([l_indices_to_consider[next(iter_l_indices_to_consider)]])
 
 		
-
+		#print l_indices_to_consider
+		#print pure_positives[-1],l_values_distinct[pure_positives[-1][0]]
+		#raw_input('...')
 		for k in iter_l_indices_to_consider:
+			#print k,l_indices_to_consider[k]
+			#print l_indices_to_consider[k],l_values_distinct[l_indices_to_consider[k]]
+			#print k,pure_positives,l_values_distinct[l_indices_to_consider[k]]
 			if l_indices_to_consider[k] in l_indices_to_consider_neg_set :
 				pure_positives.append([l_indices_to_consider[k]])
 			elif l_indices_to_consider[k]-1 in l_indices_to_consider_neg_set :
@@ -150,6 +160,8 @@ def compute_index_per_attribute(dataset,attr_name,positive_extent=None,negative_
 			else:
 				pure_positives[-1].append(l_indices_to_consider[k])
 
+			#print pure_positives[-1],l_values_distinct[pure_positives[-1][0]]
+			#raw_input('...')
 		#pure_positives.append([l_indices_to_consider[-1]])
 		l_indices_to_consider= sorted(set([x[0] for x in pure_positives]))
 		# print l_indices_to_consider_pos
@@ -169,7 +181,14 @@ def compute_index_per_attribute(dataset,attr_name,positive_extent=None,negative_
 		#TODO
 		
 		regrouping_partitions=[]
+		#print l_indices_to_consider#print l_values_distinct_to_consider_pos
+		#print l_indices_to_consider_pos 
+		#print [l_values_distinct[x] for x in l_indices_to_consider]
+		#raw_input('....')
+		
+
 		interval=range(0,l_indices_to_consider[0])
+
 		if len(interval):
 			regrouping_partitions.append(interval)
 		for k in range(len(l_indices_to_consider)):
@@ -194,7 +213,9 @@ def compute_index_per_attribute(dataset,attr_name,positive_extent=None,negative_
 		regrouping_partitions_rev={k:i for i,bins in enumerate(regrouping_partitions) for k in bins}
 		#print ' '
 		#print regrouping_partitions_rev
+
 		l_values_distinct_to_consider_pos=[l_values_distinct[bins[0]] for bins in sorted(regrouping_partitions)]
+
 		#print ' '
 		#print l_values_distinct_to_consider_pos 
 		######################
@@ -248,7 +269,7 @@ def compute_index_per_attribute(dataset,attr_name,positive_extent=None,negative_
 		#print values_min_max_partitions
 		#print ' '
 		# print regrouping_partitions
-		# print l_values_distinct_to_consider_pos
+		#print l_values_distinct_to_consider_pos
 		# raw_input('.....')
 		return  l_values_distinct_to_consider_pos,values_to_indices_to_consider,l_indices_to_consider,l_ranges_to_consider,values_min_max_partitions_to_consider,divers
 		
@@ -262,6 +283,7 @@ def compute_index_all_attributes(dataset,attributes,positive_extent=None,negativ
 	
 	for attr_name in attributes:
 		l_values_distinct,values_to_indices, l_indices, l_ranges,values_min_max_partitions,divers=compute_index_per_attribute(dataset,attr_name,positive_extent=positive_extent,negative_extent=negative_extent)
+		
 		indices_base_partitions_flattened=[]
 		for k,v in enumerate(l_indices):
 			indices_base_partitions_flattened+=[k]*len(v)
@@ -363,6 +385,8 @@ def discretize(dataset,attr_name,index_attr,nb=3,positive_extent=None,hardcore_o
 		pos_indices_to_indices_to_add=index_attr[attr_name]['pos_indices_to_indices_to_add']
 		pos_indices_to_indices_to_add_rev=index_attr[attr_name]['pos_indices_to_indices_to_add_rev']
 		pos_indices= index_attr[attr_name]['pos_indices']
+		# print values
+		# print [values[k] for k in pos_indices]
 		#cut_indices_x=[int((k/float(nb))*len(dataset)*1.) for k in range(nb)]
 		#cut_indices_x=[indices_base_partitions_flattened[int(k)] for k in cut_indices_x]
 		cut_indices_x=set(cut_points_indices) | {0,pos_indices[0],pos_indices[-1]}
@@ -382,7 +406,7 @@ def discretize(dataset,attr_name,index_attr,nb=3,positive_extent=None,hardcore_o
 		#raw_input('....')
 
 	cut_points_values=[values[k] for k in cut_points_indices]
-
+	#print cut_points_values
 	partitions_indices={}
 	partitions_values={}
 	len_cut_points_indices=len(cut_points_indices)-1
@@ -721,6 +745,42 @@ def children_numeric_particular(interval,actual_support,actual_support_bitset,ac
 				yield possible_children[0][k],possible_children[1][k],sup_to_ret,sup_to_ret_bitset,sup_full_to_ret,sup_full_to_ret_bitset
 
 
+def children_numeric_particular_bitset_old(interval,actual_support,actual_support_bitset,actual_support_full,actual_support_full_bitset,index_values,index_values_bitset,refinement_index=0,threshold_sup=1,fixed_left=False,fixed_right=False):
+	ZERO=children_numeric_particular_bitset_old.ZERO
+	if len(interval)>1:
+		arr_left=interval[1:]
+		arr_right=interval[:-1]
+		possible_children=[[arr_left,arr_right],[0,1]]
+		
+		for k in range(refinement_index,2):
+			# if fixed_left and k==0:
+			# 	continue
+			# if fixed_right and k==1:
+			# 	continue
+			if k==0:
+				if fixed_left:
+					continue
+				to_remove=interval[0]
+				to_keep_full=arr_left[0]
+				to_keep_inequality='>'
+			else:
+				if fixed_right:
+					continue
+				to_remove=interval[-1]
+				to_keep_full=arr_right[-1]
+				to_keep_inequality='<'
+
+			#sup_to_ret_bitset=actual_support_bitset&~index_values_bitset[to_remove]['=']
+			sup_to_ret_bitset=actual_support_bitset-index_values_bitset[to_remove]['=']
+			sup_to_ret=set()#actual_support-index_values[to_remove]['=']
+			if sup_to_ret_bitset!=ZERO:
+				if threshold_sup>1 and len(sup_to_ret_bitset)<threshold_sup:
+					continue
+				sup_full_to_ret=set()#actual_support_full&index_values[to_keep_full][to_keep_inequality] 
+				sup_full_to_ret_bitset=actual_support_full_bitset&index_values_bitset[to_keep_full][to_keep_inequality]
+				yield possible_children[0][k],possible_children[1][k],sup_to_ret,sup_to_ret_bitset,sup_full_to_ret,sup_full_to_ret_bitset
+children_numeric_particular_bitset_old.ZERO=intbitset()
+
 def children_numeric_particular_bitset(interval,actual_support,actual_support_bitset,actual_support_full,actual_support_full_bitset,index_values,index_values_bitset,refinement_index=0,threshold_sup=1,fixed_left=False,fixed_right=False):
 	ZERO=children_numeric_particular_bitset.ZERO
 	if len(interval)>1:
@@ -753,7 +813,7 @@ def children_numeric_particular_bitset(interval,actual_support,actual_support_bi
 				if threshold_sup>1 and len(sup_to_ret_bitset)<threshold_sup:
 					continue
 				sup_full_to_ret=set()#actual_support_full&index_values[to_keep_full][to_keep_inequality] 
-				sup_full_to_ret_bitset=actual_support_full_bitset&index_values_bitset[to_keep_full][to_keep_inequality]
+				sup_full_to_ret_bitset=actual_support_full_bitset&index_values_bitset[possible_children[0][k][0]]['>']&index_values_bitset[possible_children[0][k][-1]]['<']
 				yield possible_children[0][k],possible_children[1][k],sup_to_ret,sup_to_ret_bitset,sup_full_to_ret,sup_full_to_ret_bitset
 children_numeric_particular_bitset.ZERO=intbitset()
 
@@ -1035,6 +1095,9 @@ def enumerator_on_partitions_particular_bitset_iterativement(dataset_to_partitio
 					for child,refin_child,child_attr_support,child_attr_support_bitset,child_attr_support_full,child_attr_support_full_bitset in children_numeric_particular_bitset(intervals_closed[k],support_indices,support_indices_bitset,support_full_indices,support_full_indices_bitset,partitions_to_dataset[attributes[k]],partitions_to_dataset_bitset[attributes[k]],cur_attr_refinement_index,threshold_sup=threshold_sup,fixed_left=fixed_left&(k==0),fixed_right=fixed_right&(k==0)):
 						intervals_new=intervals_closed[:]
 						intervals_new[k]=child
+
+
+
 						PILE_PUSH((intervals_new,child_attr_support,child_attr_support_bitset,child_attr_support_full,child_attr_support_full_bitset,refin_child,k,continue_dict_copy))
 			# else:
 			# 	raw_input('......')
@@ -1918,7 +1981,7 @@ def discretize_and_mine_STRINGENT_2(dataset,dataset_to_partitions,partitions_to_
 	FIRST_TIME=True
 	
 	starting_support= set(range(len(dataset_to_partitions_new))) & positive_extent if CLOSE_ON_POSITIVE else set(range(len(dataset_to_partitions_new)))
-
+	#print 'support_size : ',len(starting_support)
 
 	enum_full_init=enum_function_to_use(dataset_to_partitions_new,partitions_to_dataset_new,partitions_to_dataset_bitset_new,attributes,index_attr,starting_support,threshold_sup=threshold_sup)
 	for p,supPOS,sup_bitset,sup,sup_full_bitset,current_refinement_index,cnt_dict in enum_full_init:
@@ -2627,6 +2690,7 @@ def Refine_and_mine_to_use(
 			'guarantee_specificity':acc_crispiness,
 
 		})
+	#print 'support_size : ',to_return[0]['support_size']
 	return to_return,HEADER
 
 
